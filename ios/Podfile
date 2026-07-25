@@ -1,0 +1,56 @@
+ENV['RCT_NEW_ARCH_ENABLED'] = '1'
+
+# Resolve react_native_pods.rb with node to allow for hoisting
+require Pod::Executable.execute_command('node', ['-p',
+  'require.resolve(
+    "react-native/scripts/react_native_pods.rb",
+    {paths: [process.argv[1]]},
+  )', __dir__]).strip
+
+platform :ios, min_ios_version_supported
+prepare_react_native_project!
+
+linkage = ENV['USE_FRAMEWORKS']
+if linkage != nil
+  Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
+  use_frameworks! :linkage => linkage.to_sym
+end
+
+target 'BinobanReactNativeExample' do
+  config = use_native_modules!
+
+  use_react_native!(
+    :path => config[:reactNativePath],
+    # An absolute path to your application root.
+    :app_path => "#{Pod::Config.instance.installation_root}/.."
+  )
+
+  post_install do |installer|
+    react_native_post_install(
+      installer,
+      config[:reactNativePath],
+      :mac_catalyst_enabled => false,
+      # :ccache_enabled => true
+    )
+
+    # Workaround: fmt 11.0.2 (pulled in transitively by React Native 0.83) fails to
+    # compile under Xcode 16.3+/26 because its `consteval` path (base.h) is broken on
+    # the newer Clang — `FMT_STRING(...)` calls in format-inl.h are rejected as
+    # "call to consteval function ... is not a constant expression". Forcing
+    # FMT_CONSTEVAL to be empty disables compile-time format-string checking (runtime
+    # formatting is unchanged) and lets fmt build. Re-applied on every `pod install`.
+    fmt_base = File.join(installer.sandbox.root, 'fmt', 'include', 'fmt', 'base.h')
+    if File.exist?(fmt_base)
+      contents = File.read(fmt_base)
+      patched = contents.sub(
+        "#if FMT_USE_CONSTEVAL\n#  define FMT_CONSTEVAL consteval",
+        "#if 0  // FMT_USE_CONSTEVAL disabled: broken on Xcode 16.3+/26 Clang\n#  define FMT_CONSTEVAL consteval"
+      )
+      if contents != patched
+        File.chmod(0644, fmt_base)
+        File.write(fmt_base, patched)
+        Pod::UI.puts "Patched fmt base.h to disable consteval (Xcode 16.3+/26 workaround)".yellow
+      end
+    end
+  end
+end

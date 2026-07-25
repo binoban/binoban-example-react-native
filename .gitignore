@@ -1,0 +1,51 @@
+# OSX
+.DS_Store
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+.pnp.*
+
+# Metro
+.metro-health-check*
+metro.config.js.bak
+
+# Watchman
+.watchmanconfig.bak
+
+# Android/IntelliJ
+build/
+.idea/
+.gradle/
+local.properties
+*.iml
+*.hprof
+.cxx/
+android/app/build/
+android/.gradle/
+
+# iOS / Xcode
+ios/build/
+ios/Pods/
+ios/Podfile.lock
+*.xcuserstate
+xcuserdata/
+DerivedData/
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+project.xcworkspace
+
+# Ruby / CocoaPods (Bundler)
+vendor/bundle/
+.bundle/
+
+# Bundle artifacts
+*.jsbundle
+
+# Env / secrets
+.env
+.env.*
+*.keystore
+!android/app/debug.keystore
