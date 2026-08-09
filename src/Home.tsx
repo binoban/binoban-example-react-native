@@ -4,13 +4,11 @@ import {
   View,
   ScrollView,
   Text,
-  TextInput,
-  TouchableOpacity,
   StyleSheet,
   SafeAreaView,
-  type StyleProp,
-  type ViewStyle,
 } from 'react-native';
+import { colors, MaterialButton, MaterialTextField } from './ui';
+import PushPanel from './push/PushPanel';
 
 type EventType = 'Track' | 'Identify';
 
@@ -22,80 +20,6 @@ type FormField = {
 
 let fieldSeq = 0;
 const newField = (): FormField => ({ id: (fieldSeq += 1), key: '', value: '' });
-
-const colors = {
-  primary: '#6200EE',
-  background: '#FFFFFF',
-  surface: '#F2F0F7',
-  onSurface: '#1C1B1F',
-  outline: '#79747E',
-  disabled: '#E7E0EC',
-  disabledText: '#49454F',
-  white: '#FFFFFF',
-};
-
-type MaterialButtonProps = {
-  label: string;
-  onPress: () => void;
-  variant?: 'contained' | 'outlined';
-  style?: StyleProp<ViewStyle>;
-};
-
-const MaterialButton = ({
-  label,
-  onPress,
-  variant = 'contained',
-  style,
-}: MaterialButtonProps) => {
-  const outlined = variant === 'outlined';
-  return (
-    <TouchableOpacity
-      activeOpacity={0.8}
-      onPress={onPress}
-      style={[styles.button, outlined && styles.buttonOutlined, style]}
-    >
-      <Text style={[styles.buttonText, outlined && styles.buttonTextOutlined]}>
-        {label.toUpperCase()}
-      </Text>
-    </TouchableOpacity>
-  );
-};
-
-type MaterialTextFieldProps = {
-  label: string;
-  value: string;
-  onChangeText?: (text: string) => void;
-  editable?: boolean;
-  multiline?: boolean;
-  style?: StyleProp<ViewStyle>;
-};
-
-const MaterialTextField = ({
-  label,
-  value,
-  onChangeText,
-  editable = true,
-  multiline = false,
-  style,
-}: MaterialTextFieldProps) => (
-  <View style={[styles.field, style]}>
-    <Text style={styles.fieldLabel}>{label}</Text>
-    <TextInput
-      style={[
-        styles.fieldInput,
-        multiline && styles.fieldInputMultiline,
-        !editable && styles.fieldInputDisabled,
-      ]}
-      value={value}
-      onChangeText={onChangeText}
-      editable={editable}
-      multiline={multiline}
-      autoCapitalize="none"
-      autoCorrect={false}
-      placeholderTextColor={colors.outline}
-    />
-  </View>
-);
 
 const Home = () => {
   const {
@@ -171,6 +95,9 @@ const Home = () => {
     deviceId,
   ]);
 
+  // Displays a notification locally, without a round trip through FCM — handy
+  // for checking the rendering and the interaction reporting on their own. A
+  // real push carries the same keys; see the Push section below.
   const onShowNotification = useCallback(() => {
     notify({
       id: 'MESSAGE_ID_TOKEN',
@@ -178,7 +105,7 @@ const Home = () => {
       body: 'Body of Message',
       action: 'https://binoban.io',
       actions:
-        '[{"title":"google","action":"https://google.com"},{"title":"ozone","action":"https://ozone.ir"}]',
+        '[{"title":"Docs","action":"https://docs.binoban.io"},{"title":"Website","action":"https://binoban.io"}]',
       source: 'binoban',
       customData: '{"url": "value"}',
     });
@@ -275,6 +202,8 @@ const Home = () => {
           onPress={onShowNotification}
           style={styles.fullButton}
         />
+
+        <PushPanel />
       </ScrollView>
     </SafeAreaView>
   );
@@ -302,57 +231,7 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   gap: { width: 12 },
   formSection: { marginTop: 8 },
-  button: {
-    backgroundColor: colors.primary,
-    borderRadius: 4,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    minHeight: 44,
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 2,
-  },
-  buttonOutlined: {
-    backgroundColor: 'transparent',
-    borderWidth: 1,
-    borderColor: colors.primary,
-    elevation: 0,
-  },
-  buttonText: {
-    color: colors.white,
-    fontSize: 14,
-    fontWeight: '600',
-    letterSpacing: 0.5,
-    textAlign: 'center',
-  },
-  buttonTextOutlined: { color: colors.primary },
   fullButton: { marginTop: 12 },
-  field: { marginBottom: 12 },
-  fieldLabel: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: colors.outline,
-    marginBottom: 4,
-  },
-  fieldInput: {
-    backgroundColor: colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.outline,
-    borderTopLeftRadius: 4,
-    borderTopRightRadius: 4,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    fontSize: 16,
-    color: colors.onSurface,
-  },
-  fieldInputMultiline: {
-    minHeight: 180,
-    textAlignVertical: 'top',
-  },
-  fieldInputDisabled: {
-    backgroundColor: colors.disabled,
-    color: colors.disabledText,
-  },
   requestField: { marginTop: 16 },
 });
 

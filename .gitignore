@@ -49,3 +49,8 @@ vendor/bundle/
 .env.*
 *.keystore
 !android/app/debug.keystore
+
+# Firebase credentials — never commit. Each developer drops their own in to
+# enable push notifications.
+google-services.json
+GoogleService-Info.plist

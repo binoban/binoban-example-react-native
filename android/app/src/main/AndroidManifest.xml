@@ -12,6 +12,25 @@
       android:theme="@style/AppTheme"
       android:usesCleartextTraffic="${usesCleartextTraffic}"
       android:supportsRtl="true">
+
+      <!--
+        Push notification appearance. The bridge reads these; each is optional and
+        falls back to a default (app icon / DEFAULT_NOTIFICATION_CHANNEL_ID /
+        "General" / empty). The channel is created at IMPORTANCE_HIGH — if a
+        channel with this id already exists at a lower importance, Android will
+        not raise it, so use a fresh id instead. See
+        docs.binoban.io/developers/engage/mobile-push-react-native
+      -->
+      <meta-data
+        android:name="io.binoban.sdk.reactNative.push_channel_id"
+        android:value="binoban_engage" />
+      <meta-data
+        android:name="io.binoban.sdk.reactNative.push_channel_name"
+        android:value="Updates" />
+      <meta-data
+        android:name="io.binoban.sdk.reactNative.push_channel_description"
+        android:value="Binoban Engage push notifications" />
+
       <activity
         android:name=".MainActivity"
         android:label="@string/app_name"
