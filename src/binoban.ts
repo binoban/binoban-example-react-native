@@ -1,6 +1,6 @@
 import { createClient } from '@binoban/react-native';
 
-// Request your credentials and deployment host from support@binoban.io. Never
+// Request your credentials and deployment host from tech@binoban.io. Never
 // commit real keys or non-production hosts — these are placeholders only.
 //
 // The client lives here rather than in App.tsx because the push background
